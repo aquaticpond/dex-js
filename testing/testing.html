@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Yer a test harry</title>
+    <script src="../vendor/jquery.min.js"></script>
+    <script src="../vendor/knockout.min.js"></script>
+    <script src="../src/core.js"></script>
+    <script src="../src/ko/extensions.js"></script>
+    <script src="../src/collection.js"></script>
+    <script src="../src/component.js"></script>
+    <script src="../src/view_model.js"></script>
+    <script src="island/dood.js"></script>
+    <script src="island/dood/fave.js"></script>
+</head>
+<body>
+
+<p>pants:</p>
+<input property="wat" type="text" data-bind="textInput: vm.pants.touched"/>
+<input property="pants" type="text" data-bind="textInput: vm.pants" />
+<script>
+
+// inlining a view model configuration
+var config =
+{
+    observables:
+    {
+        pants: 'pantaloons',
+        herp: 'dont poop yer pants',
+        derp: 'wat',
+    },
+
+    computeds:
+    {
+        pantalones: function(){ return this.pants() +' '+ this.herp(); },
+        herpderp: function(){ return this.herp() +' '+ this.derp(); },
+    },
+
+    collections:
+    {
+        doods: {vm: (data) => new island.dood(data)},
+    },
+
+    validators:
+    {
+        pants: function() { return this.pants().length > 10; },
+        herp: function(){ return !!(this.pants.isValid() && this.herp().match(/dont/g)); },
+    },
+
+};
+
+var vm = new dex.view_model(config);
+
+
+
+
+// lets pretend this collection of doods came from an ajax request.
+// except the last one, hes already an instance just to make sure
+var doods = [
+    {first: 'herp', last: 'derpington', age: 9},
+    {first: 'wat', last: 'man', age: 29, faves: [{wat: 'favourite'}, {wat: 'other favourite'}, {wat: 'boss'}]},
+    {dont: 'doit'},
+    new island.dood({first: 'inline', last: 'dood', age: 123, faves: [{wat: 'im in lining'}, {wat: 'iinlining fave instantiateion'}]}),
+];
+
+var collection = dex.collection('doods', (data) => new island.dood(data), doods);
+var inlined = collection.pop();
+var last = collection.pop();
+var me = collection.pop();
+var herp = collection.pop();
+var inline = new island.dood({first: 'inlinezzz', last: 'doodzzz', age: 123, faves: [new island.dood.fave({wat: 'im in lining'}), {wat: 'iinlining fave instantiateion'}]});
+
+ko.applyBindings();
+</script>
+</body>
+</html>
