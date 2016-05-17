@@ -47,11 +47,13 @@
             var method = element.attr('component-function');
             var args = element.attr('component-function-args');
 
-            if (!args) args = '';
-            args = String(args).split(', '); // sometimes integers get passed in, cant do string.split() on an integer!
+            if(args)
+                args = String(args).split(', '); // sometimes integers get passed in, cant do string.split() on an integer!
+            else
+                args = [];
 
             // maybe we want to pass the event!
-            if (typeof element.data('component-function-function-pass-event') != 'undefined')
+            if (element[0].hasAttribute('component-function-pass-event'))
                 args.push(event);
 
             //dex.debug(['im doing ', method, ' to ', element, ' in component ', this.name, ' the event is : ', event]);
