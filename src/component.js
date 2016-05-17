@@ -32,19 +32,22 @@
             ko.cleanNode(this.container[0]);
 
             this.container.on('click', '[component-function]', {}, (event) => this.delegateEvent(event));
+            
+            if(this.container.find('[component-onchange]').length)
+                this.container.on('change', '[component-onchange]', {}, (event) => this.delegateEvent(event, 'component-onchange'));
 
             ko.applyBindings(this, this.container[0]);
         },
 
-        delegateEvent: function(event)
+        delegateEvent: function(event, trigger = 'component-function')
         {
             var element = jQuery(event.target);
 
             //buble up
-            if (!element.attr('component-function'))
-                element = element.closest('[component-function]');
+            if (!element.attr(trigger))
+                element = element.closest(`[${trigger}]`);
 
-            var method = element.attr('component-function');
+            var method = element.attr(trigger);
             var args = element.attr('component-function-args');
 
             if(args)
