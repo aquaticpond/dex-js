@@ -29,14 +29,16 @@
 
         applyBindings: function()
         {
-            ko.cleanNode(this.container[0]);
+            if(this.container.length)
+                ko.cleanNode(this.container[0]);
 
             this.container.on('click', '[component-function]', {}, (event) => this.delegateEvent(event));
             
             if(this.container.find('[component-onchange]').length)
                 this.container.on('change', '[component-onchange]', {}, (event) => this.delegateEvent(event, 'component-onchange'));
 
-            ko.applyBindings(this, this.container[0]);
+            if(this.container.length)
+                ko.applyBindings(this, this.container[0]);
         },
 
         delegateEvent: function(event, trigger = 'component-function')
