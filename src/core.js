@@ -11,12 +11,11 @@ window.dex = (function(jQuery){
 
     // variadic jQuery deep extend which returns a new object
     // instead of modifying an original
-    dex.mix = function(){
-
-        var args = Array.prototype.slice.call(arguments);
-        args.unshift({});
-        args.unshift(true);
-        return jQuery.extend.apply(undefined, args);
+    dex.mix = function(...objects)
+    {
+        objects.unshift({});
+        objects.unshift(true);
+        return jQuery.extend.apply(undefined, objects);
     };
 
     // mix one
@@ -25,7 +24,8 @@ window.dex = (function(jQuery){
     // mix two
     dex.extend = (wan, too) => dex.mix(wan, too);
 
-    dex.config = {
+    dex.config =
+    {
         observable: (initial) => ({initial: initial}),
         collection: (vm) => ({vm: vm}),
         child: (vm) => ({vm: vm}),
