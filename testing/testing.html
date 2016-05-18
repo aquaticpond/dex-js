@@ -10,6 +10,7 @@
     <script src="../src/collection.js"></script>
     <script src="../src/component.js"></script>
     <script src="../src/view_model.js"></script>
+    <script src="../src/validator.js"></script>
     <script src="island/dood.js"></script>
     <script src="island/dood/fave.js"></script>
 </head>
@@ -34,6 +35,7 @@ var config =
     {
         pantalones: function(){ return this.pants() +' '+ this.herp(); },
         herpderp: function(){ return this.herp() +' '+ this.derp(); },
+        validatePants: function(){ return false; },
     },
 
     collections:
@@ -41,12 +43,22 @@ var config =
         doods: {vm: (data) => new island.dood(data)},
     },
 
-    validators:
-    {
-        pants: function() { return this.pants().length > 10; },
-        herp: function(){ return !!(this.pants.isValid() && this.herp().match(/dont/g)); },
-    },
+     validators:
+     {
+         pants: () => false,
+         /*
+         someproperty: dex.validator.required,
+         anotherproperty: dex.validator(dex.validator.min, 10, 'must be at least 10 characters'),
+         zootie: dex.validator.address.postcode,
+         acomputedvalidator: dex.validator.computed((vm) => vm.validatePants())
+         composed: dex.validator.compose(
+            dex.validator.required,
+            dex.validator(dex.validator.min, 10, 'must be at least 10 characters'),
+            dex.validator.address.postcode,
+         ),
 
+         */
+     },
 };
 
 var vm = new dex.view_model(config);
