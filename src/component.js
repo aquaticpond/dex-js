@@ -1,6 +1,6 @@
 (function(dex, ko, jQuery){
 
-    function component(name, container, config)
+    function component(name, container, config = {})
     {
         this.name = name;
         this.container = container;
@@ -29,28 +29,28 @@
 
         applyBindings: function()
         {
-            if(this.container.length)
-                ko.cleanNode(this.container[0]);
+            if(this.container)
+                ko.cleanNode(this.container);
 
-            this.container.on('click', '[component-function]', {}, (event) => this.delegateEvent(event));
+            jQuery(this.container).on('click', (event) => this.delegateEvent(event));
             
-            if(this.container.find('[component-onchange]').length)
-                this.container.on('change', '[component-onchange]', {}, (event) => this.delegateEvent(event, 'component-onchange'));
+            if(jQuery(this.container).find('[component-onchange]').length)
+                jQuery(this.container).on('change', '[component-onchange]', {}, (event) => this.delegateEvent(event, 'component-onchange'));
 
-            if(this.container.length)
-                ko.applyBindings(this, this.container[0]);
+            if(this.container)
+                ko.applyBindings(this, this.container);
         },
 
         delegateEvent: function(event, trigger = 'component-function')
         {
-            var element = jQuery(event.target);
+            var element = event.target;
 
             //buble up
-            if (!element.attr(trigger))
-                element = element.closest(`[${trigger}]`);
+            if (!element.hasAttribute(trigger))
+                element = jQuery(element).closest(`[${trigger}]`);
 
-            var method = element.attr(trigger);
-            var args = element.attr('component-function-args');
+            var method = element.getAttribute(trigger);
+            var args = element.getAttribute('component-function-args');
 
             if(args)
                 args = String(args).split(', '); // sometimes integers get passed in, cant do string.split() on an integer!
@@ -58,7 +58,7 @@
                 args = [];
 
             // maybe we want to pass the event!
-            if (element[0].hasAttribute('component-function-pass-event'))
+            if (element.hasAttribute('component-function-pass-event'))
                 args.push(event);
 
             //dex.debug(['im doing ', method, ' to ', element, ' in component ', this.name, ' the event is : ', event]);
