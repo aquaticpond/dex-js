@@ -16,9 +16,6 @@
 </head>
 <body>
 
-<p>pants:</p>
-<input property="wat" type="text" data-bind="textInput: vm.pants.touched"/>
-<input property="pants" type="text" data-bind="textInput: vm.pants" />
 <script>
     (function(dex, ko, jQuery){
 
@@ -90,9 +87,12 @@
     var inline = new island.dood({first: 'inlinezzz', last: 'doodzzz', age: 123, faves: [new island.dood.fave({wat: 'im in lining'}), {wat: 'iinlining fave instantiateion'}]});
 
 </script>
-<my-element id="wat2"  data-bind="text: [vm.first(), vm.last()].join(' ')">
+<my-element id="wat2">
+    <p>pants <span data-bind="text: vm.pants"></span>:</p>
+    <input type="text" data-bind="textInput: vm.pants.touched"/>
+    <input type="text" data-bind="textInput: vm.pants" />
 </my-element>
-
+<hr></hr>
 <my-other-element id="wat3">
     <span>yer</span><span>a</span><span data-bind="text: vm.last"></span><span>harry!</span>
     <button component-function="poof">poof</button>

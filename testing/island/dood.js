@@ -16,6 +16,7 @@ var island = {};
             first:  '',
             last:   '',
             age:    '',
+            pants: '',
         },
 
         computeds: {
@@ -40,6 +41,10 @@ var island = {};
             faves: {vm: (data) => new island.dood.fave(data)},
             cards: {vm: (data) => new island.dood.fave(data)},
         },
+
+        validators: {
+            pants: () => false,
+        }
         
     });
 
