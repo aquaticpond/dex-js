@@ -11,6 +11,7 @@ var island = {};
     }
 
     dood.prototype = dex.view_model.prototype.extend(dood, {
+
         observables: {
             first:  '',
             last:   '',
@@ -31,6 +32,8 @@ var island = {};
                 get: function(){ return this.age() > 18; },
                 set: function(bool){ var age = !bool ? 17 : 500; this.age(age); }
             },
+
+            poof: function(){ return `${this.first()} ${this.last()} is a poof`; }
         },
 
         collections: {

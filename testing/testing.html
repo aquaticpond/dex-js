@@ -8,8 +8,8 @@
     <script src="../src/core.js"></script>
     <script src="../src/ko/extensions.js"></script>
     <script src="../src/collection.js"></script>
-    <script src="../src/component.js"></script>
     <script src="../src/view_model.js"></script>
+    <script src="../src/component.js"></script>
     <script src="../src/validator.js"></script>
     <script src="island/dood.js"></script>
     <script src="island/dood/fave.js"></script>
@@ -20,69 +20,86 @@
 <input property="wat" type="text" data-bind="textInput: vm.pants.touched"/>
 <input property="pants" type="text" data-bind="textInput: vm.pants" />
 <script>
+    (function(dex, ko, jQuery){
 
-// inlining a view model configuration
-var config =
-{
-    observables:
+        dex.component.prototype.registerCustomElement('my-element', dex.component, {vm: new island.dood({first: 'poof', last: 'ty'})});
+        dex.component.prototype.registerCustomElement('my-other-element', dex.component, {vm: new island.dood({first: 'other', last: 'dood'}), poof: function(){ console.log(this.vm.poof()); }});
+
+    })(dex, ko, jQuery);
+
+
+    // inlining a view model configuration
+    var config =
+            {
+                observables:
+                {
+                    pants: 'pantaloons',
+                    herp: 'dont poop yer pants',
+                    derp: 'wat',
+                },
+
+                computeds:
+                {
+                    pantalones: function(){ return this.pants() +' '+ this.herp(); },
+                    herpderp: function(){ return this.herp() +' '+ this.derp(); },
+                    validatePants: function(){ return false; },
+                },
+
+                collections:
+                {
+                    doods: {vm: (data) => new island.dood(data)},
+            },
+
+            validators:
     {
-        pants: 'pantaloons',
-        herp: 'dont poop yer pants',
-        derp: 'wat',
-    },
-
-    computeds:
-    {
-        pantalones: function(){ return this.pants() +' '+ this.herp(); },
-        herpderp: function(){ return this.herp() +' '+ this.derp(); },
-        validatePants: function(){ return false; },
-    },
-
-    collections:
-    {
-        doods: {vm: (data) => new island.dood(data)},
-    },
-
-     validators:
-     {
-         pants: () => false,
-         /*
+        pants: () => false,
+        /*
          someproperty: dex.validator.required,
          anotherproperty: dex.validator(dex.validator.min, 10, 'must be at least 10 characters'),
          zootie: dex.validator.address.postcode,
          acomputedvalidator: dex.validator.computed((vm) => vm.validatePants())
          composed: dex.validator.compose(
-            dex.validator.required,
-            dex.validator(dex.validator.min, 10, 'must be at least 10 characters'),
-            dex.validator.address.postcode,
+         dex.validator.required,
+         dex.validator(dex.validator.min, 10, 'must be at least 10 characters'),
+         dex.validator.address.postcode,
          ),
 
          */
-     },
-};
+    },
+    };
 
-var vm = new dex.view_model(config);
-
-
+    var vm = new dex.view_model(config);
 
 
-// lets pretend this collection of doods came from an ajax request.
-// except the last one, hes already an instance just to make sure
-var doods = [
-    {first: 'herp', last: 'derpington', age: 9},
-    {first: 'wat', last: 'man', age: 29, faves: [{wat: 'favourite'}, {wat: 'other favourite'}, {wat: 'boss'}]},
-    {dont: 'doit'},
-    new island.dood({first: 'inline', last: 'dood', age: 123, faves: [{wat: 'im in lining'}, {wat: 'iinlining fave instantiateion'}]}),
-];
 
-var collection = dex.collection('doods', (data) => new island.dood(data), doods);
-var inlined = collection.pop();
-var last = collection.pop();
-var me = collection.pop();
-var herp = collection.pop();
-var inline = new island.dood({first: 'inlinezzz', last: 'doodzzz', age: 123, faves: [new island.dood.fave({wat: 'im in lining'}), {wat: 'iinlining fave instantiateion'}]});
 
-ko.applyBindings();
+    // lets pretend this collection of doods came from an ajax request.
+    // except the last one, hes already an instance just to make sure
+    var doods = [
+        {first: 'herp', last: 'derpington', age: 9},
+        {first: 'wat', last: 'man', age: 29, faves: [{wat: 'favourite'}, {wat: 'other favourite'}, {wat: 'boss'}]},
+        {dont: 'doit'},
+        new island.dood({first: 'inline', last: 'dood', age: 123, faves: [{wat: 'im in lining'}, {wat: 'iinlining fave instantiateion'}]}),
+    ];
+
+    var collection = dex.collection('doods', (data) => new island.dood(data), doods);
+    var inlined = collection.pop();
+    var last = collection.pop();
+    var me = collection.pop();
+    var herp = collection.pop();
+    var inline = new island.dood({first: 'inlinezzz', last: 'doodzzz', age: 123, faves: [new island.dood.fave({wat: 'im in lining'}), {wat: 'iinlining fave instantiateion'}]});
+
 </script>
+<my-element id="wat2"  data-bind="text: [vm.first(), vm.last()].join(' ')">
+</my-element>
+
+<my-other-element id="wat3">
+    <span>yer</span><span>a</span><span data-bind="text: vm.last"></span><span>harry!</span>
+    <button component-function="poof">poof</button>
+    <br/>
+    <my-element id="wat" component-function="poof" data-bind="text: ['inside', vm.first(), vm.last()].join(' ')">
+    </my-element>
+</my-other-element>
+
 </body>
 </html>

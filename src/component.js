@@ -7,7 +7,7 @@
 
         dex.attach(this, config);
 
-        return this;
+        return this.initialize();
     };
 
     component.prototype = {
@@ -21,10 +21,22 @@
 
         extend: function(constructor, config)
         {
-            var extended = dex.extend(this, config);
+            let extended = dex.extend(this, config);
             extended.constructor = constructor;
 
             return extended;
+        },
+
+        // overload this in component for custom handling
+        registerCustomElement: function(element_name, component = dex.component, config = {})
+        {
+            class ComponentElement extends HTMLElement {
+                createdCallback() {
+                    this._component = new component(element_name, this, config);
+                };
+            }
+
+            document.registerElement(element_name, ComponentElement);
         },
 
         applyBindings: function()
@@ -32,10 +44,7 @@
             if(this.container)
                 ko.cleanNode(this.container);
 
-            jQuery(this.container).on('click', (event) => this.delegateEvent(event));
-            
-            if(jQuery(this.container).find('[component-onchange]').length)
-                jQuery(this.container).on('change', '[component-onchange]', {}, (event) => this.delegateEvent(event, 'component-onchange'));
+            jQuery(this.container).on('click', '[component-function]', (event) => this.delegateEvent(event));
 
             if(this.container)
                 ko.applyBindings(this, this.container);
@@ -43,14 +52,10 @@
 
         delegateEvent: function(event, trigger = 'component-function')
         {
-            var element = event.target;
+            let element = event.target;
 
-            //buble up
-            if (!element.hasAttribute(trigger))
-                element = jQuery(element).closest(`[${trigger}]`);
-
-            var method = element.getAttribute(trigger);
-            var args = element.getAttribute('component-function-args');
+            let method = element.getAttribute(trigger);
+            let args = element.getAttribute('component-function-args');
 
             if(args)
                 args = String(args).split(', '); // sometimes integers get passed in, cant do string.split() on an integer!
