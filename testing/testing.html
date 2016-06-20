@@ -17,10 +17,6 @@
 <body>
 
 <script>
-(function(dex, ko, jQuery){
-    dex.component.prototype.registerCustomElement('my-element', dex.component, {vm: new island.dood({first: 'poof', last: 'ty'})});
-    dex.component.prototype.registerCustomElement('my-other-element', dex.component, {vm: new island.dood({first: 'other', last: 'dood'}), poof: function(){ console.log(this.vm.poof()); }});
-})(dex, ko, jQuery);
 
 // inlining a view model configuration
 var config =
@@ -64,6 +60,8 @@ var config =
 
 var vm = new dex.view_model(config);
 
+dex.component.prototype.registerCustomElement('my-element', dex.component, {vm: new island.dood({first: 'poof', last: 'ty'})});
+dex.component.prototype.registerCustomElement('my-other-element', dex.component, {vm: new island.dood({first: 'other', last: 'dood'}), poof: function(){ console.log(this.vm.poof()); }});
 
 // lets pretend this collection of doods came from an ajax request.
 // except the last one, hes already an instance just to make sure
@@ -83,12 +81,15 @@ var herp = collection.pop();
 var inline = new island.dood({first: 'inlinezzz', last: 'doodzzz', age: 123, faves: [new island.dood.fave({wat: 'im in lining'}), {wat: 'iinlining fave instantiateion'}]});
 
 </script>
+
 <my-element id="wat2">
     <p>pants <span data-bind="text: vm.pants"></span>:</p>
     <input type="text" data-bind="textInput: vm.pants.touched"/>
     <input type="text" data-bind="textInput: vm.pants" />
 </my-element>
+
 <hr />
+
 <my-other-element id="wat3">
     <span>yer</span><span>a</span><span data-bind="text: vm.last"></span><span>harry!</span>
     <button component-function="poof">poof</button>
