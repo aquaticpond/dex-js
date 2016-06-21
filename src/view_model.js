@@ -629,7 +629,7 @@
 
             Object.keys(this.observables).forEach(key => json[key] = this.getObservable(key));
             Object.keys(this.collections).forEach(key => json[key] = this.getCollection(key).map(item => item.serialize ? item.serialize() : item));
-            Object.keys(this.computeds).forEach(key => json[key] = this[key]());
+            //Object.keys(this.computeds).forEach(key => json[key] = this[key]());
             Object.keys(this.children).forEach(key => json[key] = this[key].serialize ? this[key].serialize() : this[key]);
 
             return json;
