@@ -396,7 +396,7 @@
 
         hasComputedInitialized: function(name)
         {
-            return this.hasComputed(name) && typeof this.computeds[name] == 'function';
+            return this.hasComputed(name) && typeof this[name] == 'function';
         },
 
         // @todo: getComputed()
