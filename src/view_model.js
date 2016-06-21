@@ -402,8 +402,7 @@
         // @todo: getComputed()
         getComputed: function(name)
         {
-
-
+            return this.hasComputedInitialized(name) ? this[name]() : undefined;
         },
 
         setComputed: function(name, value)
