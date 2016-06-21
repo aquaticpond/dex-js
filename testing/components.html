@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Yer a test harry</title>
+    <script src="../vendor/jquery.min.js"></script>
+    <script src="../vendor/knockout.min.js"></script>
+    <script src="../src/core.js"></script>
+    <script src="../src/ko/extensions.js"></script>
+    <script src="../src/collection.js"></script>
+    <script src="../src/view_model.js"></script>
+    <script src="../src/component.js"></script>
+    <script src="../src/validator.js"></script>
+    <script src="island/dood.js"></script>
+    <script src="island/dood/fave.js"></script>
+    <script src="island/dood-manager.js"></script>
+</head>
+<body>
+
+<script>
+    // lets pretend this collection of doods came from an ajax request.
+    // except the last one, hes already an instance just to make sure
+    var doods =
+            [
+                {first: 'herp', last: 'derpington', age: 9},
+                {first: 'wat', last: 'man', age: 29, faves: [{wat: 'favourite'}, {wat: 'other favourite'}, {wat: 'boss'}]},
+                {dont: 'doit'},
+                new island.dood({first: 'inline', last: 'dood', age: 123, faves: [{wat: 'im in lining'}, {wat: 'iinlining fave instantiateion'}]}),
+            ];
+
+    window.myDoodCollection = dex.collection('doods', (data) => new island.dood(data), doods);
+
+</script>
+
+<dood-manager>
+    <ul data-bind="foreach: filtered">
+        <li>
+            <vm-property name="name"></vm-property>
+            <vm-property name="canDrink"></vm-property>
+        </li>
+    </ul>
+</dood-manager>
+
+<dood-manager>
+    <ul data-bind="foreach: doods">
+        <li data-bind="text: canDrink"></li>
+    </ul>
+</dood-manager>
+</body>
+</html>
