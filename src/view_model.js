@@ -292,7 +292,7 @@
             var append = {};
 
             // if it doesnt have a 'get' method it needs to be configured
-            if(!(config instanceof Object) && (!config.set && !config.get && !config.init))
+            if(!((config instanceof Object) && (!config.set && !config.get && !config.init)))
                 append[name] = {initial: config};
             else
                 append[name] = config;
