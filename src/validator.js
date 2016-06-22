@@ -8,17 +8,40 @@
         this.message = options.pop();
         this.options = options;
 
-        return this.validate.bind(this);
+        return this;
     }
 
     validator.prototype = {
-        validate: function(vm, property, value)
+        isValidator: true,
+        
+        bindValidator: function(context, property)
         {
-            console.log(this.callback);
-            console.log(this.options);
-            console.log(this.message);
-            return true;
-        }
+            this.context = context;
+            this.property = property;
+
+            context[property].subscribe(this.validate.bind(this));
+        },
+
+        validate: function(value)
+        {
+            let callback = this.callback;
+            let options = this.options;
+            let context = this.context;
+            let property = context[this.property];
+            let isValid = callback.apply(context, [value, ...options]);
+            let message = !isValid ? this.message : 'poof';
+
+            property.isValid(isValid);
+            property.validationMessages([message]);
+
+        },
+
+        extend: function(constructor, config)
+        {
+            var extended = dex.extend(this, config);
+            extended.constructor = constructor;
+            return extended;
+        },
     };
 
     dex.validator = validator;
