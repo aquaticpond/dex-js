@@ -43,7 +43,13 @@
                 config = {observables: config};
 
             if(config.observables)
-                Object.keys(config.observables).forEach(key => this.addObservable(key, config.observables[key]));
+            {
+                if(Array.isArray(config.observables))
+                    Object.keys(config.observables).forEach(key => this.addObservable(config.observables[key]));
+                else
+                    Object.keys(config.observables).forEach(key => this.addObservable(key, config.observables[key]));
+            }
+
 
             if(config.collections)
                 Object.keys(config.collections).forEach(key => this.addCollection(key, config.collections[key]))
@@ -284,7 +290,7 @@
             return this;
         },
 
-        addObservable: function(name, config)
+        addObservable: function(name, config = {})
         {
             if(this.isCollection(name, config))
                 return this.addCollection(name, config);

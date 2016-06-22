@@ -12,12 +12,12 @@ var island = {};
 
     dood.prototype = dex.view_model.prototype.extend(dood, {
 
-        observables: {
-            first:  '',
-            last:   '',
-            age:    '',
-            pants: '',
-        },
+        observables: [
+            'first',
+            'last',
+            'age',
+            'pants'
+        ],
 
         computeds: {
             name: {
