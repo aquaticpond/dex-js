@@ -153,7 +153,7 @@
                 //case 'subscribers': return this.setSubscriber(name, value); break;
 
                 //if its not found, assume its supposed to be an observable and configure it
-                default: return this.addObservable(name, value).initObservable(name, value);
+                default: return this.addObservable(name).initObservable(name, value);
             }
 
             dex.debug("trying to set property "+ name +' on '+ this.constructor.name +' but it doesnt exist in configuration');
@@ -170,7 +170,7 @@
                 case 'subscribers': return this.initSubscriber(name, value); break;
 
                 //if its not found, assume its supposed to be an observable and configure it
-                default: return this.addObservable(name, value).initObservable(name, value);
+                default: return this.addObservable(name).initObservable(name, value);
             }
 
             dex.debug("trying to init property "+ name +' on '+ this.constructor.name +' but it doesnt exist in configuration');
