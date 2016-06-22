@@ -8,10 +8,9 @@
 
         this.doods = window.myDoodCollection;
 
-        this.filter = ko.observable(['canDrink', true]);
+        this.filter = ko.observable({field: 'canDrink', value: true});
 
         this.filtered = ko.computed(this.get_filtered_doods, this);
-
         
         return this.initialize();
     }
@@ -22,8 +21,8 @@
         get_filtered_doods: function()
         {
             let filter = this.filter();
-            let field = filter[0];
-            let val = filter[1];
+            let field = filter.field;
+            let val = filter.value;
 
             return this.doods().filter(dood => dood.get(field) == val);
         }
@@ -33,24 +32,12 @@
 
     // Custom elements
     let element_name = 'dood-manager';
-    class DoodManager extends HTMLElement {
+    class DoodManager extends dex.component.custom_element {
         createdCallback() {
-            this._component = new dood_manager(element_name, this);
+            this.setComponent(new dood_manager(element_name, this));
         };
-
-        getComponent() {
-            return this._component;
-        }
     }
 
-    class PropertyElement extends HTMLElement {
-        createdCallback(){
-            let property = this.getAttribute('name');
-            this.setAttribute('data-bind', `text: $data.get('${property}')`);
-        }
-    }
-    
-    document.registerElement('vm-property', PropertyElement);
     document.registerElement(element_name, DoodManager);
 
 
