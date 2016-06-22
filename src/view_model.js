@@ -151,6 +151,9 @@
                 case 'collections': return this.setCollection(name, value); break;
                 case 'children': return this.setChild(name, value); break;
                 //case 'subscribers': return this.setSubscriber(name, value); break;
+
+                //if its not found, assume its supposed to be an observable and configure it
+                default: return this.addObservable(name, value).initObservable(name, value);
             }
 
             dex.debug("trying to set property "+ name +' on '+ this.constructor.name +' but it doesnt exist in configuration');
@@ -165,6 +168,9 @@
                 case 'collection': return this.initCollection(name, value); break;
                 case 'children': return this.initChild(name, value); break;
                 case 'subscribers': return this.initSubscriber(name, value); break;
+
+                //if its not found, assume its supposed to be an observable and configure it
+                default: return this.addObservable(name, value).initObservable(name, value);
             }
 
             dex.debug("trying to init property "+ name +' on '+ this.constructor.name +' but it doesnt exist in configuration');
@@ -263,7 +269,7 @@
                 return this.updateCollection(name, value);
 
             if(!this.hasObservable(name))
-                dex.debug('trying to update observable '+ name +' but it doesnt exist in the config. `view_model`.`init_observable`');
+                this.addObservable(name, value); //dex.debug('trying to update observable '+ name +' but it doesnt exist in the config. `view_model`.`init_observable`');
 
             if(!this.hasObservableInitialized(name))
                 dex.debug('trying to update observable '+ name +' but it has not been initlized yet');
