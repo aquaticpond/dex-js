@@ -30,7 +30,7 @@
         // overload this in component for custom handling
         registerCustomElement: function(element_name, component = dex.component, config = {})
         {
-            class ComponentElement extends HTMLElement {
+            class ComponentElement extends component.custom_element {
                 createdCallback() {
                     this._component = new component(element_name, this, config);
                 };
