@@ -565,6 +565,10 @@
         // validator api
         addValidator: function(property, validator)
         {
+            // if its not a validator, decorate it with the API
+            if(!validator.isValidator)
+                validator = new dex.validator(validator);
+
             var attach = {};
             attach[property] = validator;
             dex.attach(this.validators, attach);
@@ -587,11 +591,7 @@
             if(!this.hasObservableInitialized(property))
                 return dex.debug(`Trying to attach validator to ${property} but the property has not been initialized yet.`);
 
-            let isValid = ko.pureComputed(validator, this);
-            let touched = ko.observable(0);
-            let touch = () => touched(touched.peek()+1);
-
-            dex.attach(this[property], {isValid, touched, touch});
+            validator.bindValidator(this, property);
 
             return this;
 
@@ -652,7 +652,7 @@
         // default accessors
         observable:
         {
-            init: function(name, value){ this[name] = ko.observable(value); },
+            init: function(name, value){ this[name] = dex.observable(value); },
             set: function(name, value){ return this[name](value); },
             get: function(name){ return this[name](); }
         },
