@@ -6,6 +6,6 @@
     let computed = () => false;
     let compose = () => false;
 
-    dex.validator = {min, max, required, computed, compose};
+    dex.attach(dex.validator, {min, max, required, computed, compose});
 
 })(dex, ko);
