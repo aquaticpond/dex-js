@@ -24,19 +24,18 @@
             extended.constructor = constructor;
 
             var init = {
-                observables:    extended.observables,
-                computeds:      extended.computeds,
-                collections:    extended.collections,
-                children:       extended.children,
-                subscribers:    extended.subscribers,
-                validators:     extended.validators,
+                observables:    config.observables,
+                computeds:      config.computeds,
+                collections:    config.collections,
+                children:       config.children,
+                subscribers:    config.subscribers,
+                validators:     config.validators,
             };
 
             return extended.configure(init);
         },
 
         configure: function(config) {
-
             // if no properties set in config assume its a the property list
             // without any computed/etc configuration
             if (!config.observables)
@@ -64,7 +63,7 @@
                 Object.keys(config.subscribers).forEach(key => this.addSubscriber(key, config.subscribers[key]));
 
             if(config.validators)
-                Object.keys(config.validators).forEach(key => this.addValidator(key, config.validators[key]));
+                Object.keys(config.validators).forEach(key => this.addValidators(key, config.validators[key]));
 
             return this;
         },
@@ -76,7 +75,7 @@
             Object.keys(this.computeds).forEach(key => this.initComputed(key));
             Object.keys(this.children).forEach(key => this.initChild(key));
             Object.keys(this.subscribers).forEach((key) => this.initSubscriber(key));
-            Object.keys(this.validators).forEach(key => this.initValidator(key));
+            Object.keys(this.validators).forEach(key => this.initValidators(key));
 
             return this;
         },
@@ -567,6 +566,18 @@
         },
 
 
+        addValidators: function(property, validators)
+        {
+            // handle arrays of validators
+            if(!Array.isArray(validators))
+                validators = [validators];
+
+            // initialize array to hold validators
+            if(!this.validators[property])
+                this.validators[property] = [];
+
+            validators.forEach((validator) => this.addValidator(property, validator));
+        },
 
         // validator api
         addValidator: function(property, validator)
@@ -575,32 +586,28 @@
             if(!validator.isValidator)
                 validator = new dex.validator(validator);
 
-            var attach = {};
-            attach[property] = validator;
-            dex.attach(this.validators, attach);
+            this.validators[property].push(validator);
 
             return this;
         },
 
-        getValidator: function(key)
+        getValidators: function(property)
         {
-            return this.validators[key];
+            return this.validators[property] || [];
         },
 
-        initValidator: function(property)
+        initValidators: function(property)
         {
-            var validator = this.getValidator(property);
-
             if(!this.hasObservable(property))
-                return dex.debug(`Trying to attach validator to ${property} but the property doesn't exist`);
+                return dex.debug(`Trying to attach validators to ${property} but the property doesn't exist`);
 
             if(!this.hasObservableInitialized(property))
-                return dex.debug(`Trying to attach validator to ${property} but the property has not been initialized yet.`);
+                return dex.debug(`Trying to attach validators to ${property} but the property has not been initialized yet.`);
 
-            validator.bindValidator(this, property);
+            let validators = this.getValidators(property);
+            let initializer = validator => validator.bindValidator(this, property);
 
-            return this;
-
+            validators.forEach(initializer);
         },
 
 

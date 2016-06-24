@@ -43,7 +43,7 @@ var island = {};
         },
 
         validators: {
-            pants: () => false,
+            pants: [new dex.validator('required', () => `${this.property} is a required field.`)],
         }
         
     });
