@@ -37,6 +37,7 @@
 
             this.bindCallback(this.callback);
 
+            context[property].validate = this.validate.bind(this);
             context[property].subscribe(this.validate.bind(this));
         },
 
