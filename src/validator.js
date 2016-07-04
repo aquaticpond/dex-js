@@ -18,7 +18,7 @@
         {
             if(typeof callback != 'function' &&
                typeof dex.validator[callback] == 'function')
-                callback = this[callback];
+                callback = dex.validator[callback];
 
             if(typeof callback != 'function')
             {
