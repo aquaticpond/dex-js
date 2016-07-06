@@ -39,6 +39,7 @@
 
             context[property].validate = this.validate.bind(this);
             context[property].subscribe(this.validate.bind(this));
+            context[property].validators.push(this);
         },
 
         validate: function(value)
