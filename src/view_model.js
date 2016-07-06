@@ -62,8 +62,10 @@
             if(config.subscribers)
                 Object.keys(config.subscribers).forEach(key => this.addSubscriber(key, config.subscribers[key]));
 
+            /*
             if(config.validators)
                 Object.keys(config.validators).forEach(key => this.addValidators(key, config.validators[key]));
+            */
 
             return this;
         },
@@ -458,7 +460,6 @@
 
             dex.attach(this.computeds, attach);
 
-
             return this;
         },
 
@@ -565,39 +566,60 @@
             return this;
         },
 
-
+        /*
         addValidators: function(property, validators)
         {
-            // handle arrays of validators
-            if(!Array.isArray(validators))
+            // if its just one validator, put it inside an array
+            if(!Array.isArray(validators[0]))
                 validators = [validators];
 
             // initialize array to hold validators
             if(!this.validators[property])
                 this.validators[property] = [];
 
-            validators.forEach((validator) => this.addValidator(property, validator));
-        },
+            validators.forEach((validator) => this.validators[property].push(validator));
 
+        },
+        */
+        
         // validator api
+        /*
         addValidator: function(property, validator)
         {
+
+            if(validator.isValidator)
+            {
+                let _validator = validator;
+                validator = new dex.validator(_validator.callback, _validator.message);
+                validator.options = _validator.options;
+            }
+
+
             // if its not a validator, decorate it with the API
             if(!validator.isValidator)
                 validator = new dex.validator(validator);
+
+            // @todo: figure out how to add validators and maintain their bindings to teach instance. Right now they all bind to the same view model instance.
+            // because new dex.validator gets called in the prototype definition
+            // it needs to bind a new validator at the time it gets added
 
             this.validators[property].push(validator);
 
             return this;
         },
+        */
 
         getValidators: function(property)
         {
-            return this.validators[property] || [];
+            if(this.validators[property])
+                return this.validators[property].slice(0).map((config => config.slice(0))); // clone the arrays
+
+            return [];
         },
 
         initValidators: function(property)
         {
+
             if(!this.hasObservable(property))
                 return dex.debug(`Trying to attach validators to ${property} but the property doesn't exist`);
 
@@ -605,11 +627,24 @@
                 return dex.debug(`Trying to attach validators to ${property} but the property has not been initialized yet.`);
 
             let validators = this.getValidators(property);
-            let initializer = validator => validator.bindValidator(this, property);
+            //let initializer = validator => validator.bindValidator(this, property);
 
-            validators.forEach(initializer);
+            validators.forEach((validator) => this.initValidator(property, validator));
         },
 
+        initValidator: function(property, _validator)
+        {
+            if(_validator.isValidator)
+                return;
+
+            let callback = _validator.shift();
+            let message = _validator.pop();
+            let options = _validator;
+            let validator = new dex.validator(callback, message);
+            validator.bindValidator(this, property);
+
+            //this.validators[property].push(validator);
+        },
 
 
         // hydrator

@@ -26,7 +26,7 @@
                 callback = () => false;
             }
 
-            this.callback = callback;
+            this.callback = callback.bind(this.context);
 
         },
         
