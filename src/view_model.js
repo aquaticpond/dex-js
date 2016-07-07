@@ -23,6 +23,15 @@
             var extended = dex.extend(this, config);
             extended.constructor = constructor;
 
+            // handle an array of observables and turn it into
+            // and object with observable_name => initial_value
+            if(Array.isArray(config.observables))
+            {
+                let observables = config.observables;
+                config.observables = {};
+                observables.forEach(key => config.observables[key] = '');
+            }
+
             var init = {
                 observables:    config.observables,
                 computeds:      config.computeds,
@@ -31,6 +40,14 @@
                 subscribers:    config.subscribers,
                 validators:     config.validators,
             };
+
+            // Maintain constructor names while deep extending
+            extended.observables = config.observables || {};
+            extended.computeds = config.computeds || {};
+            extended.collections = config.collections || {};
+            extended.children = config.children || {};
+            extended.subscribers = config.subscribers || {};
+            extended.validators = config.validators || {};
 
             return extended.configure(init);
         },
@@ -581,7 +598,7 @@
 
         },
         */
-        
+
         // validator api
         /*
         addValidator: function(property, validator)
@@ -612,7 +629,7 @@
         getValidators: function(property)
         {
             if(this.validators[property])
-                return this.validators[property].slice(0).map((config => config.slice(0))); // clone the arrays
+                return this.validators[property];
 
             return [];
         },
@@ -634,13 +651,10 @@
 
         initValidator: function(property, _validator)
         {
-            if(_validator.isValidator)
-                return;
-
-            let callback = _validator.shift();
-            let message = _validator.pop();
-            let options = _validator;
-            let validator = new dex.validator(callback, message);
+            let callback = _validator.callback;
+            let message = _validator.message;
+            let options = _validator.options;
+            let validator = new dex.validator(callback, ...options, message);
             validator.bindValidator(this, property);
 
             //this.validators[property].push(validator);
