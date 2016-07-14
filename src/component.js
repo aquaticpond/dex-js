@@ -47,7 +47,12 @@
             jQuery(this.container).on('click', '[component-function]', (event) => this.delegateEvent(event));
 
             if(this.container)
-                ko.applyBindings(this, this.container);
+                ko.applyBindings(this.getViewModel(), this.container);
+        },
+
+        getViewModel: function()
+        {
+            return this;
         },
 
         delegateEvent: function(event, trigger = 'component-function')
