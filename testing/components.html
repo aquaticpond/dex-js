@@ -26,7 +26,7 @@
     // except the last one, hes already an instance just to make sure
     var doods =
             [
-                {first: 'herp', last: 'derpington', age: 9},
+                {first: 'herp', last: 'derpington', age: 23, pants: 'pooptie pewptie'},
                 {first: 'wat', last: 'man', age: 29, faves: [{wat: 'favourite'}, {wat: 'other favourite'}, {wat: 'boss'}]},
                 {dont: 'doit'},
                 new island.dood({first: 'inline', last: 'dood', age: 123, faves: [{wat: 'im in lining'}, {wat: 'iinlining fave instantiateion'}]}),
@@ -35,19 +35,37 @@
     window.myDoodCollection = dex.collection('doods', (data) => new island.dood(data), doods);
 
 </script>
-
+<style>
+    .invalid vm-property
+    {
+        color: #c00;
+    }
+</style>
+<strong> doods who can drink</strong>
 <dood-manager>
     <ul data-bind="foreach: filtered">
-        <li>
-            <vm-property name="name"></vm-property>
-            <vm-property name="canDrink"></vm-property>
+        <li data-bind="css: {invalid: !pants.is_valid()}">
+            <vm-property name="name"></vm-property> --
+            <vm-property name="canDrink"></vm-property> --
+            <vm-property name="pants"></vm-property> --
+            <ul data-bind="foreach: pants.validation_messages">
+                <li data-bind="text: $data"></li>
+            </ul>
         </li>
     </ul>
 </dood-manager>
 
+<strong>doods who cant</strong>
 <dood-manager>
-    <ul data-bind="foreach: doods">
-        <li data-bind="text: canDrink"></li>
+    <ul data-bind="foreach: filtered">
+        <li data-bind="css: {invalid: !pants.is_valid()}">
+            <vm-property name="name"></vm-property> --
+            <vm-property name="canDrink"></vm-property> --
+            <vm-property name="pants"></vm-property> --
+            <ul data-bind="foreach: {data: pants.validation_messages, as: 'message'}">
+                <li data-bind="text: message"></li>
+            </ul>
+        </li>
     </ul>
 </dood-manager>
 </body>

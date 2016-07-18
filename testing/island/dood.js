@@ -43,7 +43,12 @@ var island = {};
         },
 
         validators: {
-            pants: [new dex.validator('required', () => `${this.property} is a required field.`)],
+            pants: [
+                new dex.validator('test_cakes', (...args) => 'aaaargs' + args.join(', ')),
+                new dex.validator('required', (property) => `${property} is a required field.`),
+                new dex.validator('min', 10, (property) => `${property} must be at least 10 characters.`),
+                new dex.validator('max', 2, (property) => `${property} must be less than 2 characters.`),
+            ],
         }
         
     });
