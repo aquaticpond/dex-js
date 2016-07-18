@@ -37,25 +37,43 @@
 
             this.bindCallback(this.callback);
 
-            context[property].validate = this.validate.bind(this);
-            context[property].subscribe(this.validate.bind(this));
+            if(!context[property].validators)
+                context[property].validators = [];
+
             context[property].validators.push(this);
+
+            let owner = context[property];
+            let read = function()
+            {
+                let new_value = this();
+                let validation = this.validators.map(validator => validator.run(new_value));
+                let messages = validation.map(result => result.message).filter(result => typeof result !== 'undefined');
+                let is_valid = validation.reduce(((previous, current) => previous * current.is_valid), 1);
+
+                this.validation_messages.removeAll();
+                this.validation_messages(messages);
+
+                return is_valid;
+            }
+
+            context[property].is_valid = ko.observable();
+            context[property].validate = ko.pureComputed({read, owner});
+            context[property].validate.subscribe(value => context[property].is_valid(value));
         },
 
-        validate: function(value)
+        run: function(value)
         {
             let callback = this.callback;
             let options = this.options;
             let context = this.context;
             let property = context[this.property];
-            let isValid = callback.apply(context, [value, ...options]);
-            let message = !isValid ? this.message : undefined;
+            let is_valid = callback.apply(context, [value, ...options]);
+            let message = !is_valid ? this.message : undefined;
 
             if(typeof message == 'function')
-                message = message.apply(context, [this.property, ...options]);
+                message = message.apply(undefined, [this.property, ...options]);
 
-            property.isValid(isValid);
-            property.validationMessages([message]);
+            return {is_valid, message};
         },
 
         extend: function(constructor, config)
