@@ -29,7 +29,7 @@
             {
                 let observables = config.observables;
                 config.observables = {};
-                config.observables.forEach(key => config.observables[key] = '');
+                observables.forEach(key => config.observables[key] = '');
             }
 
             var init = {
