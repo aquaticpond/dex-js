@@ -3,30 +3,33 @@
     // Constructor
     function dood_manager(name, container)
     {
+        this.initialize();
+        
         this.name = name;
         this.container = container;
-
         this.doods = window.myDoodCollection;
 
-        this.filter = ko.observable({field: 'canDrink', value: true});
-
-        this.filtered = ko.computed(this.get_filtered_doods, this);
-        
-        return this.initialize();
+        this.applyBindings();
+        return
     }
 
 
     // Interface functions
     dood_manager.prototype = dex.component.prototype.extend(dood_manager, {
-        get_filtered_doods: function()
-        {
-            let filter = this.filter();
-            let field = filter.field;
-            let val = filter.value;
 
-            return this.doods().filter(dood => dood.get(field) == val);
-        }
+        observables: {
+            filter : {initial: {field: 'canDrink', value: true}},
+        },
 
+        computeds: {
+            filtered: function(){
+                let filter = this.filter();
+                let field = filter.field;
+                let val = filter.value;
+
+                return this.doods().filter(dood => dood.get(field) == val);
+            }
+        },
     });
 
 
