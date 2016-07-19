@@ -42,6 +42,9 @@
             };
 
             // Maintain constructor names while deep extending
+            // @todo: replace this whole setup with a configuration namespace and only object notation configuration so I dont have to worry about the constructors
+            // IE: view_model.prototype.configuration.observables = { /* observable configurations */ }
+            // instead of doing it all in the root scope of the view model
             extended.observables = init.observables;
             extended.computeds = init.computeds;
             extended.collections = init.collections;
