@@ -77,7 +77,12 @@
                 this[method].apply(this, args);
 
             return true;
-        }
+        },
+
+        useData: function(data)
+        {
+            dex.debug(`component ${this.name} needs to implement the useData method for data-binding to components from ko-for-loops`);
+        },
     };
 
     dex.component = component;
