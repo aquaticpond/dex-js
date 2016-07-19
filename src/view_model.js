@@ -690,7 +690,17 @@
             console.log('vm.fetch needs to be implemented');
         },
 
-
+        reset: function()
+        {
+            Object.keys(this.observables).forEach((key) => this.set(key, undefined));
+            Object.keys(this.collections).forEach((key) => this.set(key, []));
+            Object.keys(this.children).forEach((key) => 'reset' in this.get(key) ? this.get(key).reset() : this.set(key, {}));
+        },
+        
+        dehydrate: function()
+        {
+            this.reset();
+        },
 
 
 
