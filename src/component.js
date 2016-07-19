@@ -79,9 +79,9 @@
             return true;
         },
 
-        useData: function(data)
+        useVM: function(vm)
         {
-            dex.debug(`component ${this.name} needs to implement the useData method for data-binding to components from ko-for-loops`);
+            dex.debug(`component ${this.name} needs to implement the useVM method for data-binding to components from ko-for-loops`);
         },
     };
 
