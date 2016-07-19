@@ -10,7 +10,7 @@
         return this.initialize();
     };
 
-    component.prototype = {
+    component.prototype = dex.view_model.prototype.extend(component, {
 
         // override this
         initialize: function()
@@ -83,7 +83,7 @@
         {
             dex.debug(`component ${this.name} needs to implement the useVM method for data-binding to components from ko-for-loops`);
         },
-    };
+    });
 
     dex.component = component;
 
