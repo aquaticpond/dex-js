@@ -42,12 +42,12 @@
             };
 
             // Maintain constructor names while deep extending
-            extended.observables = config.observables || {};
-            extended.computeds = config.computeds || {};
-            extended.collections = config.collections || {};
-            extended.children = config.children || {};
-            extended.subscribers = config.subscribers || {};
-            extended.validators = config.validators || {};
+            extended.observables = init.observables;
+            extended.computeds = init.computeds;
+            extended.collections = init.collections;
+            extended.children = init.children;
+            extended.subscribers = init.subscribers;
+            extended.validators = init.validators;
 
             return extended.configure(init);
         },
