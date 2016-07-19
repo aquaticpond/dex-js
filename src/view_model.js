@@ -29,16 +29,16 @@
             {
                 let observables = config.observables;
                 config.observables = {};
-                observables.forEach(key => config.observables[key] = '');
+                config.observables.forEach(key => config.observables[key] = '');
             }
 
             var init = {
-                observables:    config.observables,
-                computeds:      config.computeds,
-                collections:    config.collections,
-                children:       config.children,
-                subscribers:    config.subscribers,
-                validators:     config.validators,
+                observables:    config.observables || {},
+                computeds:      config.computeds || {},
+                collections:    config.collections || {},
+                children:       config.children || {},
+                subscribers:    config.subscribers || {},
+                validators:     config.validators || {},
             };
 
             // Maintain constructor names while deep extending
@@ -53,8 +53,10 @@
         },
 
         configure: function(config) {
+
             // if no properties set in config assume its a the property list
             // without any computed/etc configuration
+            // @todo: this is actually a bad assumption
             if (!config.observables)
                 config = {observables: config};
 
