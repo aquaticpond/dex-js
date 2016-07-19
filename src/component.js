@@ -12,21 +12,6 @@
 
     component.prototype = dex.view_model.prototype.extend(component, {
 
-        // override this
-        initialize: function()
-        {
-            this.applyBindings();
-            return this;
-        },
-
-        extend: function(constructor, config)
-        {
-            let extended = dex.extend(this, config);
-            extended.constructor = constructor;
-
-            return extended;
-        },
-
         // overload this in component for custom handling
         registerCustomElement: function(element_name, component = dex.component, config = {})
         {
