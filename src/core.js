@@ -9,6 +9,9 @@ window.dex = (function(jQuery){
     // instead of returning a new object
     dex.attach = (original, attachMe) => jQuery.extend(true, original, attachMe);
 
+    // alias for attach because attach behaves like a deep merge
+    dex.merge = dex.attach;
+
     // variadic jQuery deep extend which returns a new object
     // instead of modifying an original
     dex.mix = function(...objects)
