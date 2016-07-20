@@ -8,8 +8,11 @@
     }
 
     fave.prototype = dex.view_model.prototype.extend(fave, {
-        observables: {
-            wat: dex.config.observable('wat', ''),
+        config:
+        {
+            observables: {
+                wat: dex.config.observable('wat', ''),
+            }
         },
     });
 

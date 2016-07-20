@@ -16,18 +16,20 @@
 
     // Interface functions
     dood_manager.prototype = dex.component.prototype.extend(dood_manager, {
+        config:
+        {
+            observables: {
+                filter : {initial: {field: 'canDrink', value: true}},
+            },
 
-        observables: {
-            filter : {initial: {field: 'canDrink', value: true}},
-        },
+            computeds: {
+                filtered: function () {
+                    let filter = this.filter();
+                    let field = filter.field;
+                    let val = filter.value;
 
-        computeds: {
-            filtered: function(){
-                let filter = this.filter();
-                let field = filter.field;
-                let val = filter.value;
-
-                return this.doods().filter(dood => dood.get(field) == val);
+                    return this.doods().filter(dood => dood.get(field) == val);
+                }
             }
         },
     });
