@@ -12,56 +12,26 @@
 
     view_model.prototype = {
 
-        // factory/utility api
-        factory: function(vm, config = {})
+        extend: function(constructor, proto)
         {
-            return dex.clone(vm).configure(config);
-        },
-
-        extend: function(constructor, config)
-        {
-            var extended = dex.extend(this, config);
+            let extended = dex.extend(this, proto);
             extended.constructor = constructor;
 
-            // handle an array of observables and turn it into
-            // and object with observable_name => initial_value
-            if(Array.isArray(config.observables))
-            {
-                let observables = config.observables;
-                config.observables = {};
-                observables.forEach(key => config.observables[key] = '');
-            }
 
-            var init = {
-                observables:    config.observables || {},
-                computeds:      config.computeds || {},
-                collections:    config.collections || {},
-                children:       config.children || {},
-                subscribers:    config.subscribers || {},
-                validators:     config.validators || {},
-            };
-
-            // Maintain constructor names while deep extending
-            // @todo: replace this whole setup with a configuration namespace and only object notation configuration so I dont have to worry about the constructors
-            // IE: view_model.prototype.configuration.observables = { /* observable configurations */ }
-            // instead of doing it all in the root scope of the view model
-            extended.observables = init.observables;
-            extended.computeds = init.computeds;
-            extended.collections = init.collections;
-            extended.children = init.children;
-            extended.subscribers = init.subscribers;
-            extended.validators = init.validators;
-
-            return extended.configure(init);
+            return extended.configure();
         },
 
         configure: function(config) {
 
+            if(!config)
+                config = this.config
+
             // if no properties set in config assume its a the property list
             // without any computed/etc configuration
-            // @todo: this is actually a bad assumption
+            // @todo: this is actually a bad assumption, but its a feature when using dex.view_model without extending
             if (!config.observables)
                 config = {observables: config};
+
 
             if(config.observables)
             {
@@ -94,12 +64,12 @@
 
         initialize: function() {
 
-            Object.keys(this.observables).forEach(key => this.initObservable(key));
-            Object.keys(this.collections).forEach(key => this.initCollection(key));
-            Object.keys(this.computeds).forEach(key => this.initComputed(key));
-            Object.keys(this.children).forEach(key => this.initChild(key));
-            Object.keys(this.subscribers).forEach((key) => this.initSubscriber(key));
-            Object.keys(this.validators).forEach(key => this.initValidators(key));
+            Object.keys(this.config.observables).forEach(key => this.initObservable(key));
+            Object.keys(this.config.collections).forEach(key => this.initCollection(key));
+            Object.keys(this.config.computeds).forEach(key => this.initComputed(key));
+            Object.keys(this.config.children).forEach(key => this.initChild(key));
+            Object.keys(this.config.subscribers).forEach((key) => this.initSubscriber(key));
+            Object.keys(this.config.validators).forEach(key => this.initValidators(key));
 
             return this;
         },
@@ -230,7 +200,7 @@
         // also handles passthrough to observableArray
         hasObservable: function(name)
         {
-            return typeof this.observables[name] != 'undefined';
+            return typeof this.config.observables[name] != 'undefined';
         },
 
         hasObservableInitialized: function(name)
@@ -259,7 +229,6 @@
             else if(this.hasObservable(name))
                 return this.initObservable(name, value)
 
-
             dex.debug('trying to set observable '+ name +' to value '+ value +' but it doesnt exist in the configuration so its being ignored in `view_model`.`set_observable`');
 
             return this;
@@ -273,24 +242,18 @@
             if(!this.hasObservable(name))
                 dex.debug('trying to init observable '+ name +' but it doesnt exist in the config. `view_model`.`init_observable`');
 
-            if(!value && this.observables[name].initial)
-                value = this.observables[name].initial;
+            if(!value && this.config.observables[name].initial)
+                value = this.config.observables[name].initial;
 
-            if(!value && typeof this.observables[name] == 'string')
-                value = this.observables[name];
+            // @todo: deprecate
+            if(!value && typeof this.config.observables[name] == 'string')
+                value = this.config.observables[name].initial;
 
-            var initializer;
-
-            if(this.observables[name])
-                initializer = this.observables[name].init;
-
-            if(!initializer)
-                initializer = dex.view_model.prototype.observable.init;
-
-            initializer.call(this, name, value);
+            this[name] = this.config.use.observable(value);
 
             return this;
         },
+
 
         updateObservable: function(name, value)
         {
@@ -303,12 +266,7 @@
             if(!this.hasObservableInitialized(name))
                 dex.debug('trying to update observable '+ name +' but it has not been initlized yet');
 
-            var updater = this.observables[name].set;
-
-            if(!updater)
-                updater = dex.view_model.prototype.observable.set;
-
-            updater.call(this, name, value);
+            this[name](value);
 
             return this;
         },
@@ -318,7 +276,7 @@
             if(this.isCollection(name, config))
                 return this.addCollection(name, config);
 
-            var append = {};
+            let append = {};
 
             // if it doesnt have a 'get' method it needs to be configured
             if(!((config instanceof Object) && (!config.set && !config.get && !config.init)))
@@ -326,9 +284,7 @@
             else
                 append[name] = config;
 
-            //dex.debug(['adding observable', name, append, 'to', this.constructor.name]);
-
-            dex.attach(this.observables, append);
+            dex.attach(this.config.observables, append);
 
             return this;
         },
@@ -343,7 +299,7 @@
         // collection api
         hasCollection: function(name)
         {
-            return typeof this.collections[name] != 'undefined'
+            return typeof this.config.collections[name] != 'undefined'
         },
 
         hasCollectionInitialized: function(name)
@@ -353,10 +309,8 @@
 
         getCollection: function(name)
         {
-            if(this.hasCollectionInitialized(name))
-                return this[name]();
-            else
-                [];
+            return this.hasCollectionInitialized(name) ? this[name]() : [];
+
         },
 
         setCollection: function(name, value)
@@ -364,7 +318,7 @@
             if(!this.hasCollection(name))
                 dex.debug('trying to set colleection '+ name +' but it doesnt exist in the config. `view_model`.`set_collection`');
 
-            if(!this.collections[name].vm)
+            if(!this.config.collections[name].vm)
                 dex.debug('collection '+ name +' needs a vm configured');
 
             this[name].decorate(value);
@@ -377,31 +331,26 @@
             if(!this.hasCollection(name))
                 dex.debug('trying to init collection '+ name +' but it doesnt exist in the config. `view_model`.`init_collection`');
 
-            if(!this.collections[name].vm)
+            if(!this.config.collections[name].vm)
                 dex.debug('collection '+ name +' needs a vm configured');
 
-            if(!value && this.collections[name].initial)
-                value = this.collections[name].initial;
+            if(!value && this.config.collections[name].initial)
+                value = this.config.collections[name].initial;
 
             if(!value)
                 value = [];
 
-            var initializer = this.collections[name].init;
-            var vm = this.collections[name].vm;
-
-            if(!initializer)
-                initializer = dex.view_model.prototype.collection.init;
-
-            initializer.call(this, name, vm, value);
+            let vm = this.config.collections[name].vm;
+            this[name] = this.config.use.collection(name, vm, value);
 
             return this;
         },
 
         addCollection: function(name, config)
         {
-            var attach = {};
+            let attach = {};
             attach[name] = config;
-            dex.attach(this.collections, attach);
+            dex.attach(this.config.collections, attach);
 
             return this;
         },
@@ -426,7 +375,7 @@
         // computed api
         hasComputed: function(name)
         {
-            return typeof this.computeds[name] != 'undefined';
+            return typeof this.config.computeds[name] != 'undefined';
         },
 
         hasComputedInitialized: function(name)
@@ -453,12 +402,11 @@
 
         initComputed: function(name)
         {
-            var initializer = this.computeds[name].init;
+            let read = this.config.computeds[name].get || (() => dex.debug("no default getter defined for computed"));
+            let write = this.config.computeds[name].set;
+            let owner = this;
 
-            if(!initializer)
-                initializer = dex.view_model.prototype.computed.init;
-
-            initializer.call(this, name);
+            this[name] = ko.pureComputed({owner, read, write});
 
             return this;
         },
@@ -472,7 +420,7 @@
 
         addComputed: function(name, config)
         {
-            var attach = {};
+            let attach = {};
 
             // if it doesnt have getter and its a function use the function as the getter
             if((!(config instanceof Object) || (!config.get)) && (config instanceof Function))
@@ -480,7 +428,7 @@
             else
                 attach[name] = config;
 
-            dex.attach(this.computeds, attach);
+            dex.attach(this.config.computeds, attach);
 
             return this;
         },
@@ -497,7 +445,7 @@
 
         hasChild: function(name)
         {
-            return typeof this.children[name] != 'undefined';
+            return typeof this.config.children[name] != 'undefined';
         },
 
         // @todo: get constructor.name of child view_model
@@ -516,19 +464,15 @@
             if(!this.hasChild(name))
                 dex.debug('trying to init child '+ name +' but it doesnt exist in the config. `view_model`.`init_child`');
 
-            if(!this.children[name].vm)
+            if(!this.config.children[name].vm)
                 dex.debug('child '+ name +' needs a vm configured');
 
             if(!value)
                 value = {};
 
-            var initializer = this.children[name].init;
-            var vm = this.children[name].vm;
+            let factory = this.config.children[name].vm;
 
-            if(!initializer)
-                initializer = dex.view_model.prototype.childs.init;
-
-            initializer.call(this, name, vm, value);
+            this[name] = factory(value);
 
             return this;
         },
@@ -578,7 +522,7 @@
             if(typeof this[name] != 'function')
                 return;
 
-            var callback = this.subscribers[name];
+            let callback = this.config.subscribers[name];
 
             if(!(typeof callback == 'function'))
                 callback = dex.view_model.prototype.subscriber;
@@ -588,60 +532,16 @@
             return this;
         },
 
-        /*
-        addValidators: function(property, validators)
-        {
-            // if its just one validator, put it inside an array
-            if(!Array.isArray(validators[0]))
-                validators = [validators];
-
-            // initialize array to hold validators
-            if(!this.validators[property])
-                this.validators[property] = [];
-
-            validators.forEach((validator) => this.validators[property].push(validator));
-
-        },
-        */
-
-        // validator api
-        /*
-        addValidator: function(property, validator)
-        {
-
-            if(validator.isValidator)
-            {
-                let _validator = validator;
-                validator = new dex.validator(_validator.callback, _validator.message);
-                validator.options = _validator.options;
-            }
-
-
-            // if its not a validator, decorate it with the API
-            if(!validator.isValidator)
-                validator = new dex.validator(validator);
-
-            // @todo: figure out how to add validators and maintain their bindings to teach instance. Right now they all bind to the same view model instance.
-            // because new dex.validator gets called in the prototype definition
-            // it needs to bind a new validator at the time it gets added
-
-            this.validators[property].push(validator);
-
-            return this;
-        },
-        */
-
         getValidators: function(property)
         {
-            if(this.validators[property])
-                return this.validators[property];
+            if(this.config.validators[property])
+                return this.config.validators[property];
 
             return [];
         },
 
         initValidators: function(property)
         {
-
             if(!this.hasObservable(property))
                 return dex.debug(`Trying to attach validators to ${property} but the property doesn't exist`);
 
@@ -692,9 +592,9 @@
 
         reset: function()
         {
-            Object.keys(this.observables).forEach((key) => this.set(key, undefined));
-            Object.keys(this.collections).forEach((key) => this.set(key, []));
-            Object.keys(this.children).forEach((key) => 'reset' in this.get(key) ? this.get(key).reset() : this.set(key, {}));
+            Object.keys(this.config.observables).forEach((key) => this.set(key, undefined));
+            Object.keys(this.config.collections).forEach((key) => this.set(key, []));
+            Object.keys(this.config.children).forEach((key) => 'reset' in this.get(key) ? this.get(key).reset() : this.set(key, {}));
         },
         
         dehydrate: function()
@@ -708,12 +608,12 @@
         // serializer
         toJson: function()
         {
-            var json = {};
+            let json = {};
 
-            Object.keys(this.observables).forEach(key => json[key] = this.getObservable(key));
-            Object.keys(this.collections).forEach(key => json[key] = this.getCollection(key).map(item => item.serialize ? item.serialize() : item));
-            //Object.keys(this.computeds).forEach(key => json[key] = this[key]());
-            Object.keys(this.children).forEach(key => json[key] = this[key].serialize ? this[key].serialize() : this[key]);
+            Object.keys(this.config.observables).forEach(key => json[key] = this.getObservable(key));
+            Object.keys(this.config.collections).forEach(key => json[key] = this.getCollection(key).map(item => item.serialize ? item.serialize() : item));
+            //Object.keys(this.config.computeds).forEach(key => json[key] = this[key]());
+            Object.keys(this.config.children).forEach(key => json[key] = this[key].serialize ? this[key].serialize() : this[key]);
 
             return json;
         },
@@ -723,69 +623,24 @@
             return this.toJson();
         },
 
-
-
-
-        // default accessors
-        observable:
+        config:
         {
-            init: function(name, value){ this[name] = dex.observable(value); },
-            set: function(name, value){ return this[name](value); },
-            get: function(name){ return this[name](); }
-        },
-
-        collection:
-        {
-            init: function(name, vm, initial){ this[name] = dex.collection(name, vm, initial); },
-            set: function(name, value)
+            // dependencies
+            use:
             {
-                this[name].removeAll();
-                this[name](value);
-                return this;
-            },
-            get: function(name){ return this[name]; }
-        },
-
-        computed:
-        {
-            init: function(name, value)
-            {
-                var read = this.computeds[name].get || this.computed.get;
-                var write = this.computeds[name].set || this.computed.set;
-
-                var config = {owner: this, read: read};
-
-                if(write)
-                    config.write = write;
-
-                this[name] = ko.pureComputed(config);
-
-                return this;
+                observable: dex.observable,
+                collection: dex.collection,
+                computed: ko.pureComputed,
             },
 
-            get: function(){ dex.debug('getting wat'); },
-            set: function(value){ dex.debug('setting wat '+ value); },
-
-        },
-
-        childs:
-        {
-            init: function(name, vm_factory, initial){ this[name] = vm_factory(initial) }
-        },
-
-        subscriber: function(value)
-        {
-            dex.debug(value);
-        },
-
-
-        // configurations
-        observables: {}, // @todo: propertie: new dex.propertyCollection();
-        collections: {},
-        children: {},
-        computeds: {}, // @todo: computeds: new dex.computedCollection();
-        subscribers: {}, // @todo: subscribers = new dex.subscriberCollection();
-        validators: {},
+            // properties
+            observables: {},
+            collections: {},
+            children: {},
+            computeds: {},
+            subscribers: {},
+            validators: {},
+        }
 
     };
 
