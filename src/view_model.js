@@ -17,11 +17,27 @@
             let extended = dex.extend(this, proto);
             extended.constructor = constructor;
 
-
             return extended.configure();
         },
 
+        transformObservableConfigArrayToObject: function(observables = [])
+        {
+            let config = {};
+            observables.forEach(name => config[name] = {initial: ''});
+
+            return config;
+        },
+
         configure: function(config) {
+
+            // sanitize observable list as array from argument
+            if(config && Array.isArray(config.observables))
+                config.observables = this.transformObservableConfigArrayToObject(config.observables);
+
+            // sanitize observable list as array from prototype
+            if(Array.isArray(this.config.observables))
+                this.config.observables = this.transformObservableConfigArrayToObject(this.config.observables);
+
 
             if(!config)
                 config = this.config
@@ -34,13 +50,7 @@
 
 
             if(config.observables)
-            {
-                if(Array.isArray(config.observables))
-                    Object.keys(config.observables).forEach(key => this.addObservable(config.observables[key]));
-                else
                     Object.keys(config.observables).forEach(key => this.addObservable(key, config.observables[key]));
-            }
-
 
             if(config.collections)
                 Object.keys(config.collections).forEach(key => this.addCollection(key, config.collections[key]))
