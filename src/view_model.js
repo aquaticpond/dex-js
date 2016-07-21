@@ -316,10 +316,10 @@
         setCollection: function(name, value)
         {
             if(!this.hasCollection(name))
-                dex.debug('trying to set colleection '+ name +' but it doesnt exist in the config. `view_model`.`set_collection`');
+                dex.debug('trying to set collection '+ name +' but it doesnt exist in the config. `view_model`.`set_collection`');
 
-            if(!this.config.collections[name].vm)
-                dex.debug('collection '+ name +' needs a vm configured');
+            if(!this.config.collections[name].decorator)
+                dex.debug('collection '+ name +' needs a decorator configured');
 
             this[name].decorate(value);
 
@@ -331,8 +331,8 @@
             if(!this.hasCollection(name))
                 dex.debug('trying to init collection '+ name +' but it doesnt exist in the config. `view_model`.`init_collection`');
 
-            if(!this.config.collections[name].vm)
-                dex.debug('collection '+ name +' needs a vm configured');
+            if(!this.config.collections[name].decorator)
+                dex.debug('collection '+ name +' needs a decorator configured');
 
             if(!value && this.config.collections[name].initial)
                 value = this.config.collections[name].initial;
@@ -340,8 +340,8 @@
             if(!value)
                 value = [];
 
-            let vm = this.config.collections[name].vm;
-            this[name] = this.config.use.collection(name, vm, value);
+            let decorator = this.config.collections[name].decorator;
+            this[name] = this.config.use.collection(name, decorator, value);
 
             return this;
         },
@@ -464,15 +464,15 @@
             if(!this.hasChild(name))
                 dex.debug('trying to init child '+ name +' but it doesnt exist in the config. `view_model`.`init_child`');
 
-            if(!this.config.children[name].vm)
-                dex.debug('child '+ name +' needs a vm configured');
+            if(!this.config.children[name].decorator)
+                dex.debug('child '+ name +' needs a decorator configured');
 
             if(!value)
                 value = {};
 
-            let factory = this.config.children[name].vm;
+            let decorate = this.config.children[name].decorator;
 
-            this[name] = factory(value);
+            this[name] = decorate(value);
 
             return this;
         },
