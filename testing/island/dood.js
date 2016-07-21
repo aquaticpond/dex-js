@@ -48,8 +48,8 @@ var island = {};
             },
 
             collections: {
-                faves: {vm: (data) => new island.dood.fave(data)},
-                cards: {vm: (data) => new island.dood.fave(data)},
+                faves: {decorator: (data) => new island.dood.fave(data)},
+                cards: {decorator: (data) => new island.dood.fave(data)},
             },
 
             validators: {
