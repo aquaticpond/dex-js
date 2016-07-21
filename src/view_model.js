@@ -534,10 +534,7 @@
 
         getValidators: function(property)
         {
-            if(this.config.validators[property])
-                return this.config.validators[property];
-
-            return [];
+            return this.config.validators[property] || [];
         },
 
         initValidators: function(property)
@@ -548,21 +545,23 @@
             if(!this.hasObservableInitialized(property))
                 return dex.debug(`Trying to attach validators to ${property} but the property has not been initialized yet.`);
 
-            let validators = this.getValidators(property);
-            //let initializer = validator => validator.bindValidator(this, property);
+            console.log(this.getValidators(property));
 
-            validators.forEach((validator) => this.initValidator(property, validator));
+            this.getValidators(property)
+                .forEach((validator) => this.initValidator(property, validator));
         },
 
         initValidator: function(property, _validator)
         {
-            let callback = _validator.callback;
-            let message = _validator.message;
-            let options = _validator.options;
+            // make sure we dont operate on original
+            _validator = _validator.slice();
+
+            let instance = dex.validator; //_validator.unshift();
+            let callback = _validator.shift();
+            let message = _validator.pop();
+            let options = _validator;
             let validator = new dex.validator(callback, ...options, message);
             validator.bindValidator(this, property);
-
-            //this.validators[property].push(validator);
         },
 
 
