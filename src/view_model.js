@@ -545,8 +545,6 @@
             if(!this.hasObservableInitialized(property))
                 return dex.debug(`Trying to attach validators to ${property} but the property has not been initialized yet.`);
 
-            console.log(this.getValidators(property));
-
             this.getValidators(property)
                 .forEach((validator) => this.initValidator(property, validator));
         },
