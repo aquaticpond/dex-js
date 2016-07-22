@@ -2,8 +2,7 @@
 
     function pager()
     {
-        this.items.subscribe(this.updatePaging);
-
+        this.initialize();
         return this;
     }
 
@@ -14,11 +13,40 @@
                 page_limit: 9999,
                 pages: 1,
                 page: 1,
-                items: 1,
+                items: 1
             },
             collections: {
-                page_options: {decorator: (...data) => [...data], initial: [1] },
+                page_options: {decorator: (...data) => [...data], initial: [1], use_pager: false},
             },
+            computeds: {
+                slice: function()
+                {
+                    let item_count = this.items();
+                    let limit = this.page_limit();
+                    let pages = Math.ceil(item_count/limit);
+                    let page = this.page();
+
+                    console.log({item_count, limit, pages, page});
+
+                    if(page > pages)
+                        this.page(pages);
+
+                    if(page < 1)
+                        this.page(1);
+
+                    page = this.page();
+                    let page_options = Array.apply(null, Array(pages)).map((e,i)=>i+1);
+                    let slice = [
+                        (page-1) * limit,
+                        (page * limit)
+                    ];
+
+                    this.pages(pages);
+                    this.page_options(page_options);
+
+                    return slice;
+                }
+            }
         },
 
         page_limit_options: [25,50,100,200,500],
@@ -40,29 +68,6 @@
 
             this.page(previous >= 1 ? previous : max);
         },
-
-        updatePaging: function(item_count)
-        {
-            let limit = this.page_limit();
-            let items = raw.length || 1;
-            let pages = Math.ceil(item_count/limit);
-
-            if(this.page() > pages)
-                this.page(pages);
-
-            if(this.page() < 1)
-                this.page(1);
-
-            let page_options = Array.apply(null, Array(pages)).map((e,i)=>i+1);
-            let page = this.page();
-            let slice = [
-                (page-1) * limit,
-                (page * limit)
-            ];
-
-            this.pages(pages);
-            this.page_options(page_options);
-        }
 
     });
 

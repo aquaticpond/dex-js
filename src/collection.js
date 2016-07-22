@@ -1,11 +1,11 @@
 (function(dex, ko){
     // Decorator for ko.observableArray which attaches a hydrator method for automagic hydration of view models
-    function collection(name, decorator, data = [])
+    function collection(name, decorator, data = [], use_pager = true)
     {
         let observable = ko.observableArray();
         let filters    = ko.observableArray();
         let sorter     = ko.observable(() => 1);
-        let pager      = new dex.collection.pager();
+        let pager      = use_pager ? new dex.collection.pager() : undefined;
         sorter.direction = ko.observable(1);
 
         dex.attach(observable, collection.prototype);
@@ -55,10 +55,11 @@
             let filter = filter => filtered = filtered.filter(filter.callback.bind(filter));
 
             filters.forEach(filter);
-            
-            this.pager.items(filtered.length);
 
-            return filtered.sort(sort);
+            this.pager.items(filtered.length);
+            let slice = this.pager.slice();
+            
+            return filtered.sort(sort).slice(slice[0], slice[1]);
         },
 
         addFilter: function(_filter)

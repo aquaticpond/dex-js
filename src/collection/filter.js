@@ -24,7 +24,7 @@
 
             let check_value = vm.get(field);
 
-            return operator.call(undefined, check_value, match_value);
+            return operator(check_value, match_value);
         },
 
         getOperator: function()
@@ -35,8 +35,6 @@
                 return operator;
 
             return this.fn[operator] || this.fn['='];
-
-
         },
 
         fn: {
@@ -45,7 +43,7 @@
             '<': (a, b) => a < b,
             '>=': (a, b) => a >= b,
             '<=': (a, b) => a <= b,
-            'like': (a, b) => a.indexOf(b) > -1
+            'contains': (a = '', b = '') => a.indexOf(b) > -1
         }
     };
 

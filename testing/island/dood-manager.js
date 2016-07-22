@@ -7,7 +7,13 @@
         
         this.name = name;
         this.container = container;
-        this.doods = window.myDoodCollection;
+        this.doods = dex.collection('dood', dood => new island.dood(dood), []);
+
+        this.doods(window.myDoodCollection().slice(0));
+
+        window.myDoodCollection.subscribe((...doods) => this.doods(...doods));
+
+
 
         this.applyBindings();
         return

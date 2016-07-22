@@ -351,7 +351,9 @@
                 value = [];
 
             let decorator = this.config.collections[name].decorator;
-            this[name] = this.config.use.collection(name, decorator, value);
+            let use_pager = this.config.collections[name].use_pager;
+
+            this[name] = this.config.use.collection(name, decorator, value, use_pager);
 
             return this;
         },
