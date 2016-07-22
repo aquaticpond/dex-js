@@ -26,8 +26,6 @@
                     let pages = Math.ceil(item_count/limit);
                     let page = this.page();
 
-                    console.log({item_count, limit, pages, page});
-
                     if(page > pages)
                         this.page(pages);
 
