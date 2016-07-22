@@ -1,10 +1,10 @@
 (function(dex, ko){
 
-    function filter(field, operator, match)
+    function filter(_field, _operator, _match)
     {
-        let field = ko.observable(field);
-        let operator = ko.observable(operator);
-        let match = ko.observable(match);
+        let field = ko.observable(_field);
+        let operator = ko.observable(_operator);
+        let match = ko.observable(_match);
 
         dex.attach(this, {field, operator, match});
 
