@@ -45,6 +45,14 @@
 </style>
 <strong> doods who can drink</strong>
 <dood-manager>
+    <div>
+       limit: <input type="text" data-bind="textInput: doods.pager.page_limit" /><br/>
+        page: <input type="text" data-bind="textInput: doods.pager.page" /><br />
+        items: <input type="text" data-bind="textInput: doods.pager.items" /><Br />
+        pages: <input type="text" data-bind="textInput: doods.pager.pages" /><br />
+        <button component-function="doods.pager.previous_page">Previous</button></button><button component-function="doods.pager.next_page">Next</button>
+
+    </div>
     <ul data-bind="foreach: doods.filtered">
         <li data-bind="css: {invalid: !pants.is_valid()}">
             <vm-property name="name"></vm-property> --
