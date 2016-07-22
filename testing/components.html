@@ -9,6 +9,7 @@
     <script src="../src/ko/extensions.js"></script>
     <script src="../src/observable.js"></script>
     <script src="../src/collection.js"></script>
+    <script src="../src/collection/filter.js"></script>
     <script src="../src/view_model.js"></script>
     <script src="../src/component.js"></script>
     <script src="../src/component/custom-element.js"></script>
@@ -43,7 +44,7 @@
 </style>
 <strong> doods who can drink</strong>
 <dood-manager>
-    <ul data-bind="foreach: filtered">
+    <ul data-bind="foreach: doods.filtered">
         <li data-bind="css: {invalid: !pants.is_valid()}">
             <vm-property name="name"></vm-property> --
             <vm-property name="canDrink"></vm-property> --
@@ -57,7 +58,7 @@
 
 <strong>doods who cant</strong>
 <dood-manager>
-    <ul data-bind="foreach: filtered">
+    <ul data-bind="foreach: doods.filtered">
         <li data-bind="css: {invalid: !pants.is_valid()}">
             <vm-property name="name"></vm-property> --
             <vm-property name="canDrink"></vm-property> --
