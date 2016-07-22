@@ -44,8 +44,11 @@
         {
             let element = event.target;
 
-            let method = element.getAttribute(trigger);
+            let method = element.getAttribute(trigger) || '';
             let args = element.getAttribute('component-function-args');
+
+            if(!method)
+                return true;
 
             if(args)
                 args = String(args).split(', '); // sometimes integers get passed in, cant do string.split() on an integer!
@@ -58,8 +61,32 @@
 
             //dex.debug(['im doing ', method, ' to ', element, ' in component ', this.name, ' the event is : ', event]);
 
-            if(method && typeof this[method] == 'function')
+            let nested = method.split('.');
+
+            if(nested.length === 1 && typeof this[method] == 'function')
                 this[method].apply(this, args);
+
+            // ability to pass functions from a components childlike: component.child.grandchild.call_me()
+            if(nested.length > 1)
+            {
+                let current = this;
+                let previous = undefined;
+                let fn = undefined;
+
+                while(nested.length)
+                {
+                    fn = nested.shift();
+
+                    if(current[fn])
+                    {
+                        previous = current;
+                        current = current[fn];
+                    }
+                }
+
+                if(typeof current == 'function')
+                    previous[fn](args)
+            }
 
             return true;
         },
