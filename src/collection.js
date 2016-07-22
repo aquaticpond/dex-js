@@ -5,18 +5,18 @@
         let observable = ko.observableArray();
         let filters    = ko.observableArray();
         let sorter     = ko.observable(() => 1);
+        let pager      = new dex.collection.pager();
         sorter.direction = ko.observable(1);
 
         dex.attach(observable, collection.prototype);
 
         let filtered   = ko.pureComputed(observable.filter, observable);
-        dex.attach(observable, {filters, filtered, sorter});
+        dex.attach(observable, {filters, filtered, sorter, pager});
 
         if(decorator)
             observable.decorator = decorator;
 
         return observable.decorate(data);
-
     }
 
 
@@ -55,6 +55,8 @@
             let filter = filter => filtered = filtered.filter(filter.callback.bind(filter));
 
             filters.forEach(filter);
+            
+            this.pager.items(filtered.length);
 
             return filtered.sort(sort);
         },
