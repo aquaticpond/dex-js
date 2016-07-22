@@ -29,7 +29,23 @@
 
         getOperator: function()
         {
-            return this.operator() || ((wan, too) => wan === too);
+            let operator = this.operator();
+
+            if(typeof operator === 'function')
+                return operator;
+
+            return this.fn[operator] || this.fn['='];
+
+
+        },
+
+        fn: {
+            '=': (a, b) => a === b,
+            '>': (a, b) => a > b,
+            '<': (a, b) => a < b,
+            '>=': (a, b) => a >= b,
+            '<=': (a, b) => a <= b,
+            'like': (a, b) => a.indexOf(b) > -1
         }
     };
 
