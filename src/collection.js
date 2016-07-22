@@ -59,10 +59,9 @@
             return filtered.sort(sort);
         },
 
-        addFilter: function()
+        addFilter: function(_filter)
         {
-            let properties = this.getVmProperties();
-            let filter = new dex.collection.filter(properties);
+            let filter = _filter || new dex.collection.filter();
             this.filters.push(filter);
         },
 

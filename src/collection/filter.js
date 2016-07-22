@@ -1,12 +1,12 @@
 (function(dex, ko){
 
-    function filter(properties)
+    function filter(field, operator, match)
     {
-        let field = ko.observable();
-        let operator = ko.observable();
-        let match = ko.observable();
+        let field = ko.observable(field);
+        let operator = ko.observable(operator);
+        let match = ko.observable(match);
 
-        dex.attach(this, {properties, field, operator, match});
+        dex.attach(this, {field, operator, match});
 
         return this;
     }
