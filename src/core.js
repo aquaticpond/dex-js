@@ -1,3 +1,10 @@
+// safari is a twat
+if (typeof HTMLElement !== 'function'){
+    var _HTMLElement = function(){};
+    _HTMLElement.prototype = HTMLElement.prototype;
+    HTMLElement = _HTMLElement;
+}
+
 window.dex = (function(jQuery){
 
     var dex = {};
