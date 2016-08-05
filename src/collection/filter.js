@@ -16,13 +16,13 @@
         {
             let field = this.field();
             let operator = this.getOperator();
-            let match_value = this.match();
+            let match_value = this.match().toLowerCase();
 
             // if values aren't always return true
             if(!field || !operator || !match_value)
                 return true;
 
-            let check_value = vm.get(field);
+            let check_value = vm.get(field).toLowerCase();
 
             return operator(check_value, match_value);
         },

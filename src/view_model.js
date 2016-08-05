@@ -1,7 +1,7 @@
 (function(dex, ko){
 
     // Define constructor
-    function view_model(config)
+    function view_model(config = {})
     {
         this.configure(config);
         this.initialize();
@@ -352,8 +352,19 @@
 
             let decorator = this.config.collections[name].decorator;
             let use_pager = this.config.collections[name].use_pager;
+            let dependant = this.config.collections[name].dependant;
+            let source    = this.config.collections[name].source;
+            let ids       = this.config.collections[name].ids;
+            let manager = false;
 
-            this[name] = this.config.use.collection(name, decorator, value, use_pager);
+            let collection = undefined;
+            if(source)
+                collection = dex.collection.computed(name, this, source, ids);
+            else
+                collection = this.config.use.collection(name, decorator, value, use_pager, manager, dependant);
+
+            collection.vm = this;
+            this[name] = collection;
 
             return this;
         },
@@ -479,10 +490,12 @@
             if(!this.config.children[name].decorator)
                 dex.debug('child '+ name +' needs a decorator configured');
 
-            if(!value)
-                value = {};
-
             let decorate = this.config.children[name].decorator;
+            let proxy = this.config.children[name].key;
+
+            // for requires
+            if(typeof proxy !== 'undefined')
+                return this[proxy].subscribe(value => this[name] = decorate(value, [this, name]));
 
             this[name] = decorate(value);
 
@@ -492,23 +505,28 @@
         // @todo: does this need to be a thing?
         setChild: function(name, value)
         {
-            if(this[name].hydrate)
+            return this.initChild(name, value);
+            /*if(this[name].hydrate)
                 this[name].hydrate(value);
             else
                 this[name] = value;
 
             return this;
+            */
         },
 
         // @todo: does this need to be a thing?
         updateChild: function(name, value)
         {
+            return this.initChild(name, value);
+            /*
             if(this[name].hydrate)
                 this[name].hydrate(value);
             else
                 this[name] = value;
 
             return this;
+            */
         },
 
 
@@ -576,9 +594,9 @@
 
 
         // hydrator
-        fromJson: function(data)
+        fromJson: function(data = {})
         {
-            if(typeof data === 'undefined')
+            if(typeof data === 'undefined' || data === null)
                 return this;
 
             if(data.constructor.name === this.constructor.name && typeof data.serialize == 'function')
@@ -589,15 +607,19 @@
             return this;
         },
 
-        hydrate: function(data)
+        hydrate: function(data = {})
         {
             return this.fromJson(data)
         },
 
         fetch: function()
         {
-            console.log('vm.fetch needs to be implemented');
+            let uri = this._fetchUri+this.id();
+            let namespace = this._fetchNamespace;
+            jQuery.ajax(uri).always(json => this.hydrate(JSON.parse(json)[namespace]));
         },
+
+
 
         reset: function()
         {
@@ -620,9 +642,9 @@
             let json = {};
 
             Object.keys(this.config.observables).forEach(key => json[key] = this.getObservable(key));
-            Object.keys(this.config.collections).forEach(key => json[key] = this.getCollection(key).map(item => item.serialize ? item.serialize() : item));
+            Object.keys(this.config.collections).forEach(key => json[key] = this.getCollection(key).map(item => item && item.serialize ? item.serialize() : item));
             //Object.keys(this.config.computeds).forEach(key => json[key] = this[key]());
-            Object.keys(this.config.children).forEach(key => json[key] = this[key].serialize ? this[key].serialize() : this[key]);
+            Object.keys(this.config.children).forEach(key => json[key] = this[key] && this[key].serialize ? this[key].serialize() : this[key]);
 
             return json;
         },
