@@ -1,14 +1,10 @@
 (function(dex, ko){
 
-    // Decorator for ko.observableArray which attaches a hydrator method for automagic hydration of view models
     function computed_collection(name, vm, source, _ids)
     {
 
         let get = function(){
             let ids = this[_ids]();
-            //ids.forEach(id => source.require(id));
-
-            console.log('getting computed collection stuff', ids);
             return source()().filter(item => ids.indexOf(item.get('id')) >= 0);
         }
 
@@ -23,7 +19,6 @@
         dex.attach(observable, computed_collection.prototype);
 
         observable.hydrate = function(values){
-            console.log('hydrationg computed collection with', values);
             this(values);
         };
 

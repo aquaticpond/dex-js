@@ -341,8 +341,8 @@
             if(!this.hasCollection(name))
                 dex.debug('trying to init collection '+ name +' but it doesnt exist in the config. `view_model`.`init_collection`');
 
-            if(!this.config.collections[name].decorator)
-                dex.debug('collection '+ name +' needs a decorator configured');
+            if(!this.config.collections[name].decorator && !this.config.collections[name].source)
+                dex.debug('collection '+ name +' needs a decorator or source configured');
 
             if(!value && this.config.collections[name].initial)
                 value = this.config.collections[name].initial;

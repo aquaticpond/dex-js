@@ -17,7 +17,6 @@
 
         if(manager) {
             observable.needs = ko.pureComputed(observable._needs, observable).extend({rateLimit: 1});
-            observable.needs.subscribe(value => console.log('subscriber needs', value));
             observable.needs.subscribe(value => observable.updateNeeds(value), observable);
         }
         //observable.updateNeeds = ko.comput(observable._updateNeeds, observable);
