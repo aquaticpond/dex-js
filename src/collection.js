@@ -3,7 +3,7 @@
     function collection(name, decorator, data = [], use_pager = true, manager = false, dependant = false)
     {
         let observable = ko.observableArray().extend({rateLimit: 1});
-        observable.dexname = name;
+
         observable.filters    = ko.observableArray();
         observable.required   = ko.observableArray().extend({rateLimit: 1});
         observable.sorter     = ko.observable(() => 1);
@@ -14,14 +14,10 @@
         dex.attach(observable, collection.prototype);
 
         observable.filtered   = ko.pureComputed(observable.filter, observable);
+        observable.needs = ko.pureComputed(observable._needs, observable).extend({rateLimit: 1});
 
-        if(manager) {
-            observable.needs = ko.pureComputed(observable._needs, observable).extend({rateLimit: 1});
+        if(manager)
             observable.needs.subscribe(value => observable.updateNeeds(value), observable);
-        }
-        //observable.updateNeeds = ko.comput(observable._updateNeeds, observable);
-        //dex.attach(observable, {filters, sorter, pager, required});
-
 
         if(decorator)
             observable.decorator = decorator;
@@ -110,8 +106,6 @@
 
                 if(is_collection)
                 {
-                    //if(dependant.getSubscriptionsCount() < 1) return;
-
                     var subscription = this.subscribe(function(items){
                         subscription.dispose();
 

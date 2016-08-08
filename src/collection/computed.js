@@ -18,10 +18,6 @@
 
         dex.attach(observable, computed_collection.prototype);
 
-        observable.hydrate = function(values){
-            this(values);
-        };
-
         observable.filtered   = ko.pureComputed(observable.filter, observable);
 
         return observable;
