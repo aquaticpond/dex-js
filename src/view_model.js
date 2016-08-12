@@ -633,6 +633,12 @@
             this.reset();
         },
 
+        is_valid: function()
+        {
+            return Object.keys(this.config.validators)
+                         .map(key => this[key].is_valid())
+                         .reduce((current, sum) => sum * current, 1);
+        },
 
 
 
