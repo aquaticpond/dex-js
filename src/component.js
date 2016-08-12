@@ -88,7 +88,7 @@
                     previous[fn](args)
             }
 
-            return true;
+            return false;
         },
 
         useVM: function(vm)
