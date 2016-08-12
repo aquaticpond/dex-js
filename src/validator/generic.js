@@ -2,7 +2,7 @@
 
     let min = (val, min) => val && val.length > min;
     let max = (val, max) => val && val.length < max;
-    let required = (val, isTouched) => /* !isTouched || */ (val != '' && typeof val !== 'undefined');
+    let required = (val, property) => !property.touched() || (val != '' && typeof val !== 'undefined');
     let compose = () => false;
     let test_cakes = function(...cakes){ console.log('testing the cakes', this, ...cakes); return false; };
 

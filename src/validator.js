@@ -56,9 +56,8 @@
                 return is_valid;
             }
 
-            context[property].is_valid = ko.observable();
-            context[property].validate = ko.pureComputed({read, owner});
-            context[property].validate.subscribe(value => context[property].is_valid(value));
+            context[property].is_valid = ko.pureComputed({read, owner});
+            context[property].validate = read;
         },
 
         run: function(value)
@@ -67,6 +66,8 @@
             let options = this.options;
             let context = this.context;
             let property = context[this.property];
+
+            options.push(property);
             let is_valid = callback.apply(context, [value, ...options]);
             let message = !is_valid ? this.message : undefined;
 
