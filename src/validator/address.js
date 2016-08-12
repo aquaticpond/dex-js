@@ -6,7 +6,7 @@
         JE: /JE\d[\dA-Z]?[\s]?\d[ABD-HJLN-UW-Z]{2}/i,
         GG: /GY\d[\dA-Z]?[\s]?\d[ABD-HJLN-UW-Z]{2}/i,
         IM: /IM\d[\dA-Z]?[\s]?\d[ABD-HJLN-UW-Z]{2}/i,
-        US: /\d{5}([\s\-]\d{4})?/,
+        US: /^\d{5}([\s\-]\d{4})?$/,
         CA: /[ABCEGHJKLMNPRSTVXY]\d[ABCEGHJ-NPRSTV-Z][\s]?\d[ABCEGHJ-NPRSTV-Z]\d/i,
         DE: /\d{5}/,
         JP: /\d{3}-\d{4}/,
@@ -163,7 +163,7 @@
     };
 
     let postcode = function(value = ''){
-        let country = this.country_code();
+        let country = this.country_code() || 'US';
         let regex = postcode_regex[country] ? postcode_regex[country] : postcode_regex.default;
 
         return regex.test(value);
