@@ -7,7 +7,7 @@
         init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
 
             if('touch' in valueAccessor())
-                jQuery(element).on('focusin', () => valueAccessor().touch());
+                jQuery(element).on('focusout', () => valueAccessor().touch());
 
             originalTextInput.init(element, valueAccessor, allBindings, viewModel, bindingContext);
         },
