@@ -166,7 +166,7 @@
         let country = this.country_code() || 'US';
         let regex = postcode_regex[country] ? postcode_regex[country] : postcode_regex.default;
 
-        return regex.test(value);
+        return value.length == 0 || regex.test(value);
     };
 
     dex.validator.address = {postcode};
