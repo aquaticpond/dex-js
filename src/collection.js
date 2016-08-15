@@ -50,12 +50,9 @@
                 return this.decorate(data)
 
             data = data.filter(item => typeof item !== 'undefined');
-
-            if(data.length)
-            {
-                this.removeAll();
-                this(data);
-            }
+            
+            this.removeAll();
+            this(data);
 
             return this;
         },
