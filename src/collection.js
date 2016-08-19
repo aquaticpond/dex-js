@@ -111,6 +111,13 @@
                     });
 
                 }
+                else if(typeof dependant === 'function')
+                {
+                    this.subscribe(items => {
+                       let required = items.filter(filter)[0];
+                       dependant(required);
+                    });
+                }
                 else
                 {
                     let model = dependant[0];
