@@ -91,12 +91,6 @@
             if(typeof id === 'undefined' || !id)
                 return;
 
-            if(this.required().indexOf(id) === -1)
-                this.required.push(id);
-
-            let filter = item => item.get('id') === id;
-            let required = this().filter(filter)[0];
-
             if(dependant) {
 
                 let is_collection = ko.isObservable(dependant) && !(dependant.destroyAll === undefined);
@@ -114,8 +108,8 @@
                 else if(typeof dependant === 'function')
                 {
                     this.subscribe(items => {
-                       let required = items.filter(filter)[0];
-                       dependant(required);
+                        let required = items.filter(filter)[0];
+                        dependant(required);
                     });
                 }
                 else
@@ -131,6 +125,15 @@
 
                 }
             }
+
+            if(this.required().indexOf(id) === -1)
+                this.required.push(id);
+
+            let filter = item => item.get('id') === id;
+            let required = this().filter(filter)[0];
+
+            if(required)
+                this.valueHasMutated();
 
             return required;
         },
