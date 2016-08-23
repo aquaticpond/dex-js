@@ -505,20 +505,25 @@
         // @todo: does this need to be a thing?
         setChild: function(name, value)
         {
-            return this.initChild(name, value);
-            /*if(this[name].hydrate)
+            if(!this.hasChild(name))
+                return dex.debug('trying to set child '+ name +' but it doesnt exist in the config. `view_model`.`set_child`');
+
+            if(!this.hasChildInitialized(name))
+                return this.initChild(name, value);
+            
+            if(typeof this[name].hydrate === 'function')
                 this[name].hydrate(value);
             else
                 this[name] = value;
 
             return this;
-            */
+
         },
 
         // @todo: does this need to be a thing?
         updateChild: function(name, value)
         {
-            return this.initChild(name, value);
+            return this.setChild(name, value);
             /*
             if(this[name].hydrate)
                 this[name].hydrate(value);

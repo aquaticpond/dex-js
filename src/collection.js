@@ -68,6 +68,10 @@
                 let has = this();
                 let response = JSON.parse(json);
                 let needs = this.needs();
+
+                if(!needs)
+                    return;
+
                 let filtered = response.filter(item => needs.indexOf(item.id) !== -1);
                 let mapped = filtered.map(this.decorator);
                 let merged = has.concat(mapped);
