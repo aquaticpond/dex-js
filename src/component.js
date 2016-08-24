@@ -44,6 +44,10 @@
         {
             let element = event.target;
 
+            //buble up
+            if (!element.hasAttribute('component-function'))
+                element = jQuery(element).closest('[component-function]')[0];
+
             let method = element.getAttribute(trigger) || '';
             let args = element.getAttribute('component-function-args');
 
