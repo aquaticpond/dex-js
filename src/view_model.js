@@ -415,9 +415,12 @@
         setComputed: function(name, value)
         {
             if(!this.hasComputed(name))
-                dex.debug('trying to set computed '+ name +' on '+ this.constructor.name +' but it doesnt exist in the config');
+                dex.debug(`trying to set computed ${name} on ${this.constructor.name} but it doesnt exist in the config`);
 
-            if(this.hasComputedInitialized(name))
+            if(this.hasComputedInitialized(name) && !ko.isWritableObservable(this[name]))
+                dex.debug(`trying to set computed ${name} to ${value} in ${this.constructor.name} but it is not a writeable computed`);
+
+            if(this.hasComputedInitialized(name) && ko.isWritableObservable(this[name]))
                 this[name](value);
 
             return this;
@@ -437,8 +440,7 @@
         // @todo: updateComputed()
         updateComputed: function(name, value)
         {
-
-            return this;
+            return this.setComputed(name, value);
         },
 
         addComputed: function(name, config)
