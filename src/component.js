@@ -29,7 +29,7 @@
             if(this.container)
                 ko.cleanNode(this.container);
 
-            jQuery(this.container).on('click', '[component-function]', (event) => this.delegateEvent(event));
+            jQuery(this.container).on('click', '[component-function]', event => this.delegateEvent(event));
 
             if(this.container)
                 ko.applyBindings(this.getViewModel(), this.container);
@@ -45,8 +45,8 @@
             let element = event.target;
 
             //buble up
-            if (!element.hasAttribute('component-function'))
-                element = jQuery(element).closest('[component-function]')[0];
+            if (!element.hasAttribute(trigger))
+                element = jQuery(element).closest(`[${trigger}]`)[0];
 
             let method = element.getAttribute(trigger) || '';
             let args = element.getAttribute('component-function-args');
